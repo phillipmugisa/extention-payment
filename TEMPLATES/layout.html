@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Extension</title>
+        <meta name="description" content="">
+        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.css" >
+        <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+
+    <style>
+        img {
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover !important;
+        }
+        .details-view {
+            display: grid;
+            grid-template-columns: .6fr 2fr;
+            gap: 2rem;
+        }
+        .detail-sidebar {
+            grid-template-columns: 1fr;
+            grid-template-rows: .2fr 1fr .1fr;
+            align-items: flex-start;
+        }
+        .user-profile .img-wrapper {
+            width: 25%;
+            aspect-ratio: 1;
+            overflow: hidden;
+            border-radius: 50%;
+        }
+    </style>
+
+    <script>
+        tailwind.config = {
+          theme: {
+            extend: {
+                colors: {
+                    goldColor: '#FFD700',
+                }
+            }
+          }
+        }
+    </script>
+
+    <body>
+        <!-- prompt login -->
+
+            {% block content %}
+
+            {% endblock content %}
+
+    </body>
+</html>
