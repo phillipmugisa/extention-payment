@@ -38,17 +38,20 @@
                                         {% endif %}
                                     {% endfor %}
                                 </ul>
-                                <form action="" method="post" class="grid gap-4 px-5 py-2">
+                                <form action="{% url 'manager:payment' %}" method="post" class="grid gap-4 px-5 py-2">
+                                    {% csrf_token %}
+                                    <input type="hidden" value="{{ package.id }} " name="package_id">
+                                    <input type="hidden" value="{{ pricing.id }} " name="pricing_id">
                                     <div class="flex items-center justify-center gap-2">
-                                        <input type="radio" value="" name="payment-duration" id="basic-monthly" class="cursor-pointer">
-                                        <label class="text-base text-gray-900 cursor-pointer" for="basic-monthly">Monthly <span class="text-gray-500">(save 10%)</span></label>
+                                        <input type="radio" value="monthly" name="payment_duration" id="basic-monthly-{{ pricing.name }}" class="cursor-pointer">
+                                        <label class="text-base text-gray-900 cursor-pointer" for="basic-monthly-{{ pricing.name }}">Monthly <span class="text-gray-500">(save 10%)</span></label>
                                     </div>
                                     <div class="flex items-center justify-center gap-2">
-                                        <input type="radio" value="" checked name="payment-duration" id="basic-annually" class="cursor-pointer">
-                                        <label class="text-base text-gray-900 cursor-pointer"  for="basic-annually">Annually <span class="text-gray-500">(save 30%)</span></label>
+                                        <input type="radio" value="annually" checked name="payment_duration" id="basic-annually-{{ pricing.name }}" class="cursor-pointer">
+                                        <label class="text-base text-gray-900 cursor-pointer"  for="basic-annually-{{ pricing.name }}">Annually <span class="text-gray-500">(save 30%)</span></label>
                                     </div>
                                     <div class="grid gap-2">
-                                        <input class="px-4 py-2 bg-black cursor-pointer hover:bg-gray-900 text-white text-base rounded" type="button" value="Purchase">
+                                        <input class="px-4 py-2 bg-black cursor-pointer hover:bg-gray-900 text-white text-base rounded" type="submit" value="Purchase">
                                     </div>
                                 </form>
                             </div>

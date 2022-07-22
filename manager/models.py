@@ -96,3 +96,37 @@ class Feature(models.Model):
     )
     def __str__(self) -> str:
         return f'{self.name}'
+
+
+class Subscription(models.Model):
+    user_id = models.IntegerField(
+        _("User id")
+    )
+    package_id = models.IntegerField(
+        _("Package id")
+    )
+    total_amount_paid =  models.IntegerField(
+        _("Total Amount Paid")
+    )
+    start_date = models.DateField(
+        _("Subscription Start Date")
+    )
+    expiry_date = models.DateField(
+        _("Subscription Expiry Date")
+    )
+    email = models.CharField(
+        _("Client's Email"),
+        max_length=256
+    )
+    country_code = models.CharField(
+        _("Client's Country"),
+        max_length=9
+    )
+    address = models.CharField(
+        _("Client's Address"),
+        max_length=256
+    )
+    order_key = models.CharField(
+        _("Order key"),
+        max_length=256
+    )
