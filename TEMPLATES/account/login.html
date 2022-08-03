@@ -10,11 +10,11 @@
 
 
             <div class="social-login justify-center flex gap-4 flex-wrap">
-                <a href="{% provider_login_url 'google' %}" class="border border-gray-300 border-solid px-6 py-2 rounded-md flex gap-2 items-baseline">
+                <a href="{% provider_login_url 'google' %}{% if userType %}?request_user=extension{% endif %}" class="border border-gray-300 border-solid px-6 py-2 rounded-md flex gap-2 items-baseline">
                     <i class="text-xl fa fa-google"></i>
                     <span class="text-base text-gray-800">Login With Google</span>
                 </a>
-                <a href="{% provider_login_url 'github' %}" class="border border-gray-300 border-solid px-6 py-2 rounded-md flex gap-2 items-baseline">
+                <a href="{% provider_login_url 'github' %}{% if userType %}?request_user=extension{% endif %}" class="border border-gray-300 border-solid px-6 py-2 rounded-md flex gap-2 items-baseline">
                     <i class="text-xl fa fa-github"></i>
                     <span class="text-base text-gray-800">Login With GitHub</span>
                 </a>
@@ -25,6 +25,16 @@
             </div>
 
             <hr>
+            {% if messages %}
+                {% for message in messages %}
+                    {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %} 
+                        <div class="flex justify-between items-center border-2 border-solid border-green-500 px-6 py-2 text-green-500 text-lg rounded-md font-semibold leading-5" onclick="(function(){event.target.style.display = 'none';return false;})()">
+                            <p>{{ message }}</p>
+                            <button class="flex justify-center items-center font-medium"><i class="fa fa-close"></i></button>
+                        </div>
+                        {% endif %}
+                {% endfor %}
+            {% endif %}
 
             <div class="grid gap-4">
                 <form action="{% url 'app_auth:login' %}" method="post" class="grid gap-4">
@@ -33,6 +43,9 @@
                         <label class="text-gray-700" for="">Username</label>
                         <input type="text" class="px-4 py-2 border border-gray-400 border-solid rounded w-full focus:border-gray-500" name="username">
                     </div>
+                    {% if userType %}
+                        <input type="hidden" class="px-4 py-2 border border-gray-400 border-solid rounded w-full focus:border-gray-500" value="{{userType}}" name="userType">
+                    {% endif %}
                     <div class="grid gap-2">
                         <label class="text-gray-700" for="">Password</label>
                         <input type="password" class="px-4 py-2 border border-gray-400 border-solid rounded w-full focus:border-gray-500" name="password">
@@ -41,7 +54,7 @@
                         <input class="px-4 py-2 bg-black cursor-pointer hover:bg-gray-900 text-white text-base rounded" type="submit" value="Sign In">
                     </div>
                 </form>
-                <a href="" class="text-center">Register Account</a>
+                <a href="{% url 'app_auth:register' %}" class="text-center">Register Account</a>
             </div>
         </section>
     </main>

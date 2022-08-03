@@ -4,3 +4,4 @@ from manager import models
 admin.site.register(models.Package)
 admin.site.register(models.Pricing)
 admin.site.register(models.Feature)
+admin.site.register(models.Subscription)

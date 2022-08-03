@@ -8,7 +8,7 @@
                         <h2 class="text-xl">{{ package.name }}</h2>
                         <p class="text-base text-gray-700">{{ package.description }}</p>
                     </div>
-                    <div class="grid grid-cols-3 gap-3">
+                    <div class="grid grid-cols-3 gap-3 items-start">
                         {% for pricing in pricings %}
                             <div class="{% if pricing.name == 'Gold' %} border-2 border-blue-400 scale-105 {% elif pricing.name == 'Platinum' %} border-2 border-yellow-400 {% else %} border border-gray-300 mx-5 {% endif %} p-3 border-solid rounded-lg" >
                                 <div class="flex justify-between items-center p-3">
@@ -38,22 +38,24 @@
                                         {% endif %}
                                     {% endfor %}
                                 </ul>
-                                <form action="{% url 'manager:payment' %}" method="post" class="grid gap-4 px-5 py-2">
-                                    {% csrf_token %}
-                                    <input type="hidden" value="{{ package.id }} " name="package_id">
-                                    <input type="hidden" value="{{ pricing.id }} " name="pricing_id">
-                                    <div class="flex items-center justify-center gap-2">
-                                        <input type="radio" value="monthly" name="payment_duration" id="basic-monthly-{{ pricing.name }}" class="cursor-pointer">
-                                        <label class="text-base text-gray-900 cursor-pointer" for="basic-monthly-{{ pricing.name }}">Monthly <span class="text-gray-500">(save 10%)</span></label>
-                                    </div>
-                                    <div class="flex items-center justify-center gap-2">
-                                        <input type="radio" value="annually" checked name="payment_duration" id="basic-annually-{{ pricing.name }}" class="cursor-pointer">
-                                        <label class="text-base text-gray-900 cursor-pointer"  for="basic-annually-{{ pricing.name }}">Annually <span class="text-gray-500">(save 30%)</span></label>
-                                    </div>
-                                    <div class="grid gap-2">
-                                        <input class="px-4 py-2 bg-black cursor-pointer hover:bg-gray-900 text-white text-base rounded" type="submit" value="Purchase">
-                                    </div>
-                                </form>
+                                {% if pricing.price != 0 %}
+                                    <form action="{% url 'manager:payment' %}" method="post" class="grid gap-4 px-5 py-2">
+                                        {% csrf_token %}
+                                        <input type="hidden" value="{{ package.id }} " name="package_id">
+                                        <input type="hidden" value="{{ pricing.id }} " name="pricing_id">
+                                        <div class="flex items-center justify-center gap-2">
+                                            <input type="radio" value="monthly" name="payment_duration" id="basic-monthly-{{ pricing.name }}" class="cursor-pointer">
+                                            <label class="text-base text-gray-900 cursor-pointer" for="basic-monthly-{{ pricing.name }}">Monthly <span class="text-gray-500">($ {{pricing.price}})</span></label>
+                                        </div>
+                                        <div class="flex items-center justify-center gap-2">
+                                            <input type="radio" value="annually" checked name="payment_duration" id="basic-annually-{{ pricing.name }}" class="cursor-pointer">
+                                            <label class="text-base text-gray-900 cursor-pointer"  for="basic-annually-{{ pricing.name }}">Annually <span class="text-gray-500">($ {{pricing.annualy_price}})</span></label>
+                                        </div>
+                                        <div class="grid gap-2">
+                                            <input class="px-4 py-2 bg-black cursor-pointer hover:bg-gray-900 text-white text-base rounded" type="submit" value="Purchase">
+                                        </div>
+                                    </form>
+                                {% endif %}
                             </div>
                         {% endfor %}
 

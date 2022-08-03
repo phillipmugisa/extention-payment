@@ -1,0 +1,67 @@
+{% extends '../layout.html' %}
+{% load socialaccount %}
+{% block content %}
+
+    <main class="grid justify-items-center items-center w-screen my-10 bg-white">
+        <section class="container grid gap-5 border border-gray-400 border-solid w-5/12 py-10 px-10 rounded-lg">
+            <div class="text-black">
+                <h2 class="text-2xl text-center">Welcome to AliMedia Downloader</h2>
+            </div>
+
+
+            <div class="social-login justify-center flex gap-4 flex-wrap">
+                <a href="{% provider_login_url 'google' %}" class="border border-gray-300 border-solid px-6 py-2 rounded-md flex gap-2 items-baseline">
+                    <i class="text-xl fa fa-google"></i>
+                    <span class="text-base text-gray-800">Register With Google</span>
+                </a>
+                <a href="{% provider_login_url 'github' %}" class="border border-gray-300 border-solid px-6 py-2 rounded-md flex gap-2 items-baseline">
+                    <i class="text-xl fa fa-github"></i>
+                    <span class="text-base text-gray-800">Register With GitHub</span>
+                </a>
+                <!-- <a href="" class="border border-gray-300 border-solid px-6 py-2 rounded-md flex gap-2 items-baseline">
+                    <i class="text-xl fa fa-linkedin"></i>
+                    <span class="text-base text-gray-800">Login With LinkedIn</span>
+                </a> -->
+            </div>
+
+            <hr>
+            {% if messages %}
+                {% for message in messages %}
+                    {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %} 
+                        <div class="flex justify-between items-center border-2 border-solid border-red-700 px-6 pb-3 py-2 text-red-700 text-lg rounded-md font-semibold leading-5" onclick="(function(){event.target.style.display = 'none';return false;})()">
+                            <p>{{ message }}</p>
+                            <button class="flex justify-center items-center font-medium"><i class="fa fa-close"></i></button>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+
+            <div class="grid gap-4">
+                <form action="{% url 'app_auth:register' %}" method="post" class="grid gap-4">
+                    {% csrf_token %}
+                    <div class="grid gap-2">
+                        <label class="text-gray-700" for="">Username</label>
+                        <input type="text" class="px-4 py-2 border border-gray-400 border-solid rounded w-full focus:border-gray-500" name="username" required>
+                    </div>
+                    <div class="grid gap-2">
+                        <label class="text-gray-700" for="">Email</label>
+                        <input type="email" class="px-4 py-2 border border-gray-400 border-solid rounded w-full focus:border-gray-500" name="email" required>
+                    </div>
+                    <div class="grid gap-2">
+                        <label class="text-gray-700" for="">Password</label>
+                        <input type="password" class="px-4 py-2 border border-gray-400 border-solid rounded w-full focus:border-gray-500" name="password" required>
+                    </div>
+                    <div class="grid gap-2">
+                        <label class="text-gray-700" for="">Confirm Password</label>
+                        <input type="password" class="px-4 py-2 border border-gray-400 border-solid rounded w-full focus:border-gray-500" name="confirm_password" required>
+                    </div>
+                    <div class="grid gap-2">
+                        <input class="px-4 py-2 bg-black cursor-pointer hover:bg-gray-900 text-white text-base rounded" type="submit" value="Register">
+                    </div>
+                </form>
+                <a href="{% url 'app_auth:login' %}" class="text-center">Already Have An Account</a>
+            </div>
+        </section>
+    </main>
+
+{% endblock content %}

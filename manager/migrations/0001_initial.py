@@ -10,36 +10,87 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Package',
+            name="Package",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=256, verbose_name='Package Name')),
-                ('description', models.TextField(verbose_name='Package Description')),
-                ('slug', models.SlugField(blank=True, null=True, unique=True, verbose_name='Safe Url')),
-                ('img_url', models.ImageField(upload_to=manager.models.get_file_path, verbose_name='Package Image')),
-                ('added_on', models.DateTimeField(default=django.utils.timezone.now, verbose_name='Upload On')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=256, verbose_name="Package Name")),
+                ("description", models.TextField(verbose_name="Package Description")),
+                (
+                    "slug",
+                    models.SlugField(
+                        blank=True, null=True, unique=True, verbose_name="Safe Url"
+                    ),
+                ),
+                (
+                    "img_url",
+                    models.ImageField(
+                        upload_to=manager.models.get_file_path,
+                        verbose_name="Package Image",
+                    ),
+                ),
+                (
+                    "added_on",
+                    models.DateTimeField(
+                        default=django.utils.timezone.now, verbose_name="Upload On"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Pricing',
+            name="Pricing",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=256, verbose_name='Name')),
-                ('price', models.IntegerField(verbose_name='Pricing')),
-                ('package', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='package', to='manager.package')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=256, verbose_name="Name")),
+                ("price", models.IntegerField(verbose_name="Pricing")),
+                (
+                    "package",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="package",
+                        to="manager.package",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Feature',
+            name="Feature",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=256, verbose_name='Name')),
-                ('pricing', models.ManyToManyField(related_name='pricing_feature', to='manager.pricing')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=256, verbose_name="Name")),
+                (
+                    "pricing",
+                    models.ManyToManyField(
+                        related_name="pricing_feature", to="manager.pricing"
+                    ),
+                ),
             ],
         ),
     ]

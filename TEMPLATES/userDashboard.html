@@ -20,15 +20,14 @@
                     <div class="grid gap-4">
                         <h3 class="text-semibold text-gray-900 mx-1">Your Packages</h3>
                         <div class="grid gap-3">
-                            <a href="" class="grid bg-goldColor px-4 py-2  text-gray-800 rounded">
-                                <span>Image Downloader</span>
-                            </a>
-                            <a href="" class="grid bg-blue-400 px-4 py-2 text-gray-800 rounded">
-                                <span>Video Downloader</span>
-                            </a>
-                            <a href="" class="grid border border-gray-200 border-solid px-4 py-2  text-gray-800 rounded">
-                                <span>Multimedia Downloader</span>
-                            </a>
+                            {% for subscription in subscriptions %}
+                                <a href="{% url 'manager:package' subscription.package_id.slug %}" class="grid bg-goldColor px-4 py-2  text-gray-800 rounded">
+                                    <span>{{subscription.package_id.name}}</span>
+                                </a>
+                            {% endfor %}
+                            {% if not subscriptions %}
+                                <p class="text-slate-500 font-normal pl-5">No Packages</p>
+                            {% endif %}
                         </div>
 
                         <h3 class="text-semibold text-gray-900 mx-1">Pending Payments</h3>

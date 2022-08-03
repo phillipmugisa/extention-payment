@@ -6,13 +6,21 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('manager', '0001_initial'),
+        ("manager", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='pricing',
-            name='name',
-            field=models.CharField(choices=[('Basic', 'Basic'), ('Gold', 'Gold'), ('Platinum', 'Platinum')], max_length=256, verbose_name='Name'),
+            model_name="pricing",
+            name="name",
+            field=models.CharField(
+                choices=[
+                    ("Basic", "Basic"),
+                    ("Gold", "Gold"),
+                    ("Platinum", "Platinum"),
+                ],
+                max_length=256,
+                verbose_name="Name",
+            ),
         ),
     ]
