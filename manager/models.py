@@ -82,6 +82,8 @@ class Subscription(models.Model):
     country_code = models.CharField(_("Client's Country"), max_length=9)
     address = models.CharField(_("Client's Address"), max_length=256)
     order_key = models.CharField(_("Order key"), max_length=256)
+    expired = models.BooleanField(_("Expired"), default=False)
+    active = models.BooleanField(_("Active"), default=True)
 
 
 @receiver(post_save, sender=Pricing)

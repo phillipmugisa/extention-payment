@@ -8,6 +8,8 @@ urlpatterns = [
     path("", views.HomePageView.as_view(), name="dashboard"),
     path("package/<str:slug>", views.PackageDetailView.as_view(), name="package"),
     path("payment/", views.PaymentView.as_view(), name="payment"),
+    path("deactivate/", views.SubscriptionDeactivateView, name="deactivate"),
+    path("profile/", views.Profile, name="profile"),
     path(
         "complete-payment/",
         views.CompletePaymentView.as_view(),

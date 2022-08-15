@@ -1,70 +1,115 @@
 {% extends 'layout.html' %}
 {% block content %}
         
-        <main class="grid w-screen h-screen bg-white">
-            <section class="p-10 w-10/12 mx-auto">
-                <div class="grid gap-8 p-3 rounded-lg">
-                    <div>
-                        <h2 class="text-xl">{{ package.name }}</h2>
-                        <p class="text-base text-gray-700">{{ package.description }}</p>
+        <section class="details-view p-5">
+            <div class="detail-sidebar grid gap-3 content-start p-3 border border-gray-300 border-solid rounded-lg">
+                <!-- user profile  -->
+                <div class="user-profile flex gap-6 items-center">
+                    <div class="img-wrapper">
+                        <img src="https://images.unsplash.com/photo-1542596594-649edbc13630?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8OXx8eW91dGglMjBnaXJsfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60" alt="">
                     </div>
-                    <div class="grid grid-cols-3 gap-3 items-start">
-                        {% for pricing in pricings %}
-                            <div class="{% if pricing.name == 'Gold' %} border-2 border-blue-400 scale-105 {% elif pricing.name == 'Platinum' %} border-2 border-yellow-400 {% else %} border border-gray-300 mx-5 {% endif %} p-3 border-solid rounded-lg" >
-                                <div class="flex justify-between items-center p-3">
-                                    <h3 class="text-xl">{{ pricing.name }}</h3>
-                                    <span class="flex items-baseline gap-1">
-                                        <h3 class="text-xl">$</h3>
-                                        <h2 class="text-4xl">{{ pricing.price }}</h2>
-                                    </span>
-                                </div>
-                                <ul class="grid gap-2 list-none list-outside text-gray-700 px-5 py-2">
-
-                                    {% for feature in features %}
-                                        {% if pricing in feature.pricing.all %}
-                                            <li class="flex gap-3 justify-between">
-                                                <span>{{ feature.name }}</span>
-                                                <span>
-                                                    <i class="fa fa-check"></i>
-                                                </span>
-                                            </li>
-                                        {% else %}
-                                            <li class="flex gap-3 justify-between">
-                                                <span>{{ feature.name }}</span>
-                                                <span>
-                                                    <i class="fa fa-close"></i>
-                                                </span>
-                                            </li>
-                                        {% endif %}
-                                    {% endfor %}
-                                </ul>
-                                {% if pricing.price != 0 %}
-                                    <form action="{% url 'manager:payment' %}" method="post" class="grid gap-4 px-5 py-2">
-                                        {% csrf_token %}
-                                        <input type="hidden" value="{{ package.id }} " name="package_id">
-                                        <input type="hidden" value="{{ pricing.id }} " name="pricing_id">
-                                        <div class="flex items-center justify-center gap-2">
-                                            <input type="radio" value="monthly" name="payment_duration" id="basic-monthly-{{ pricing.name }}" class="cursor-pointer">
-                                            <label class="text-base text-gray-900 cursor-pointer" for="basic-monthly-{{ pricing.name }}">Monthly <span class="text-gray-500">($ {{pricing.price}})</span></label>
-                                        </div>
-                                        <div class="flex items-center justify-center gap-2">
-                                            <input type="radio" value="annually" checked name="payment_duration" id="basic-annually-{{ pricing.name }}" class="cursor-pointer">
-                                            <label class="text-base text-gray-900 cursor-pointer"  for="basic-annually-{{ pricing.name }}">Annually <span class="text-gray-500">($ {{pricing.annualy_price}})</span></label>
-                                        </div>
-                                        <div class="grid gap-2">
-                                            <input class="px-4 py-2 bg-black cursor-pointer hover:bg-gray-900 text-white text-base rounded" type="submit" value="Purchase">
-                                        </div>
-                                    </form>
-                                {% endif %}
-                            </div>
-                        {% endfor %}
-
-                    </div>
-                    <div class="grid justify-items-center items-center self-end">
-                        <a class="px-6 py-2 cursor-pointer text-gray-800 bg-white text-base rounded border border-gray-800 border-solid" href="{% url 'manager:dashboard' %}">Cancel</a>
+                    <div class="grid gap-sm content-center">
+                        <h4 class="text-base font-medium text-gray-600"><span class="text-gray-400">@</span>{{user.username}}</h4> 
+                        <h4 class="text-base font-medium text-gray-800">{{user.first_name}} {{user.last_name}}</h4> 
                     </div>
                 </div>
-            </section>
-        </main>
+                <div class="grid gap-4">
+                    <a class="px-6 py-2 cursor-pointer text-gray-800 bg-white text-base rounded border border-gray-800 border-solid" href="{% url 'manager:dashboard' %}">Available Services</a>
+                    <div class="grid gap-3">
+                        {% for subscription in subscriptions %}
+                            <a href="{% url 'manager:package' subscription.package_id.slug %}" class="px-6 py-2 cursor-pointer text-gray-800 bg-white text-base rounded border border-gray-800 border-solid">
+                                <span>{{subscription.package_id.name}}</span>
+                            </a>
+                        {% endfor %}
+                    </div>
+                    <a class="px-6 py-2 cursor-pointer text-gray-800 bg-white text-base rounded border border-gray-800 border-solid" href="{% url 'manager:profile' %}">Account Settings</a>
+                </div>
+                <div class="grid justify-items-center items-center self-end">
+                    <a class="px-6 py-2 cursor-pointer bg-gray-800 text-white text-base rounded hover:bg-black" href="{% url 'app_auth:logout' %}">Logout</a>
+                </div>
+            </div>
+            <div class="grid gap-8 p-3 rounded-lg border border-gray-300 border-solid rounded-lg">
+                <div class="grid gap-1 justify-start">
+                    <h2 class="text-xl">{{ package.name }}</h2>
+                    <p class="text-base text-gray-700">{{ package.description }}</p>
+                    <span class="text-red-800 my-2">Current Subscription: <span class="px-4 py-2 rounded-md bg-yellow-400 text-white">{{user_package.pricing.name}}</span></span>
+
+                    {% if user_package.pricing.name != 'Free' %}
+                        <form action="{% url 'manager:deactivate' %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="slug" value="{{package.slug}}">
+                            <input type="submit" class="px-6 py-2 cursor-pointer text-gray-800 bg-red-600 text-white text-base rounded " style="justify-self: flex-start;" value='Deactivate' />
+                        </form>
+                    {% endif %}
+
+                    {% if messages %}
+                        {% for message in messages %}
+                            {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %} 
+                                <div class="flex justify-between items-center border-2 border-solid border-red-700 px-6 pb-3 py-2 text-red-700 text-base rounded-md font-semibold leading-5" style="justify-self: flex-start;">
+                                    <p>{{ message }}</p>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <div class="grid grid-cols-1 gap-2 md:grid-cols-3 items-start">
+                    {% for pricing in pricings %}
+                        <div class="{% if pricing.name == 'Starter' %} border-2 border-blue-400 {% elif pricing.name == 'Master' %} border-2 border-yellow-400 {% else %} border border-gray-300 mx-5 {% endif %} p-3 border-solid rounded-lg" >
+                            <div class="flex justify-between items-center p-3">
+                                <h3 class="text-xl">{{ pricing.name }}</h3>
+                                <span class="flex items-baseline gap-1">
+                                    <h3 class="text-xl">$</h3>
+                                    <h2 class="text-4xl">{{ pricing.price }}</h2>
+                                </span>
+                            </div>
+                            <ul class="grid gap-2 list-none list-outside text-gray-700 px-5 py-2">
+
+                                {% for feature in features %}
+                                    {% if pricing in feature.pricing.all %}
+                                        <li class="flex gap-3 justify-between">
+                                            <span>{{ feature.name }}</span>
+                                            <span>
+                                                <i class="fa fa-check"></i>
+                                            </span>
+                                        </li>
+                                    {% else %}
+                                        <li class="flex gap-3 justify-between">
+                                            <span>{{ feature.name }}</span>
+                                            <span>
+                                                <i class="fa fa-close"></i>
+                                            </span>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                            {% if pricing.price != 0 %}
+                                <form action="{% url 'manager:payment' %}?upgrade={% if package.id == user_package.package_id.id %}true{% else %}false{% endif %}" method="post" class="grid gap-4 px-5 py-2">
+                                    {% csrf_token %}
+                                    <input type="hidden" value="{{ package.id }} " name="package_id">
+                                    <input type="hidden" value="{{ pricing.id }} " name="pricing_id">
+                                    <div class="flex items-center justify-center gap-2">
+                                        <input type="radio" value="monthly" name="payment_duration" id="basic-monthly-{{ pricing.name }}" class="cursor-pointer">
+                                        <label class="text-base text-gray-900 cursor-pointer" for="basic-monthly-{{ pricing.name }}">Monthly <span class="text-gray-500">($ {{pricing.price}})</span></label>
+                                    </div>
+                                    <div class="flex items-center justify-center gap-2">
+                                        <input type="radio" value="annually" checked name="payment_duration" id="basic-annually-{{ pricing.name }}" class="cursor-pointer">
+                                        <label class="text-base text-gray-900 cursor-pointer"  for="basic-annually-{{ pricing.name }}">Annually <span class="text-gray-500">($ {{pricing.annualy_price}})</span></label>
+                                    </div>
+                                    {% if pricing.id != user_package.pricing.id %}
+                                        <div class="grid gap-2">
+                                            <input class="px-4 py-2 bg-black cursor-pointer hover:bg-gray-900 text-white text-base rounded" type="submit" value="{% if package.id == user_package.package_id.id and pricing.id != user_package.pricing.id %} Upgrade {% else %} Purchase {% endif %}">
+                                        </div>
+                                    {% endif %}
+                                </form>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+
+                </div>
+                <div class="grid justify-items-center items-center self-end">
+                    <a class="px-6 py-2 cursor-pointer text-gray-800 bg-white text-base rounded border border-gray-800 border-solid" href="{% url 'manager:dashboard' %}">Cancel</a>
+                </div>
+            </div>
+        </section>
 
 {% endblock content %}

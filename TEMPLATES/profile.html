@@ -29,19 +29,37 @@
                         <a class="px-6 py-2 cursor-pointer bg-gray-800 text-white text-base rounded hover:bg-black" href="{% url 'app_auth:logout' %}">Logout</a>
                     </div>
                 </div>
-                <div class="p-3 border border-gray-300 border-solid rounded-lg">
-                    <div class="grid gap-3 px-2 py-1">
-                        <h3 class="text-lg text-gray-800">Available Services</h3>
-                        <div class="grid grid-cols-4 gap-3">
-                            {% for package in packages %}
-                                <a href="{% url 'manager:package' package.slug %}" class="flex gap-3 justify-items-center items-center border border-gray-200 border-solid px-3 py-3 rounded">
-                                    <span class="text-4xl" style="border-radius: 5px;width: 80px;object-fit: cover;overflow: hidden;aspect-ratio: 1;">
-                                        <img src="/media/{{ package.img_url }}" alt="">
-                                    </span>
-                                    <h3 class="text-base text-gray-800">{{ package.name }}</h3>
-                                </a>
-                            {%endfor%}
+                <div class="p-5 grid gap-6 content-start border border-gray-300 border-solid rounded-lg">
+                    <div class="grid gap-3 content-start">
+                        <h3 class="font-semibold text-lg">User Profile</h3>
+                        <div class="group grid gap-2">
+                            <p class="text-slate-700">Username:</p>
+                            <p class="text-black border border-gray-300 border-solid px-4 py-2 rounded-md">{{user.username}}</p>
                         </div>
+                        <div class="group grid gap-2">
+                            <p class="text-slate-700">Email:</p>
+                            <p class="text-black border border-gray-300 border-solid px-4 py-2 rounded-md">{{user.email}}</p>
+                        </div>
+                    </div>
+                    <div class="grid gap-3 content-start">
+                        <h3 class="font-semibold text-lg">Subscription Details</h3>
+                        {% for subscription in subscriptions %}
+                            <div class="group grid gap-4 justify-start" style="grid-template-columns: 1fr .1fr;">
+                                <div class="group grid grid-cols-2 gap-4">
+                                    <div class="grid gap-2 items-center" style="grid-template-columns: .25fr 1fr;">
+                                        <p class="text-slate-700">Service:</p>
+                                        <p class="text-black border border-gray-300 border-solid px-4 py-2 rounded-md">{{subscription.package_id.name}}</p>
+                                    </div>
+                                    <div class="grid gap-2 items-center" style="grid-template-columns: .25fr 1fr;">
+                                        <p class="text-slate-700">Subscription:</p>
+                                        <p class="text-black border border-gray-300 border-solid px-4 py-2 rounded-md">{{subscription.pricing.name}}</p>
+                                    </div>
+                                </div>
+                                <a href="{% url 'manager:package' subscription.package_id.slug %}" class="px-6 py-2 cursor-pointer text-gray-800 bg-blue-400 text-white text-base rounded justify-center" style="justify-self: flex-start;">
+                                    <span>View</span>
+                                </a>
+                            </div>
+                        {% endfor %}
                     </div>
                 </div>
             </section>

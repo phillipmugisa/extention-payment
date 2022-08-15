@@ -1,4 +1,3 @@
-from urllib import response
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views import View
@@ -16,6 +15,7 @@ def login_complete(request, source):
         response = HttpResponse("", status=200)
         response.set_cookie('refresh', str(refresh))
         response.set_cookie('access', str(refresh.access_token))
+        response.delete_cookie('user_type')
         return response
 
     return HttpResponse("", status=200) 
@@ -33,7 +33,10 @@ class loginUserView(View):
             response.set_cookie('user_type', "extension")
 
         if request.user.is_authenticated:
-            return redirect(reverse("manager:dashboard"))
+            response = redirect(reverse("manager:dashboard"))
+            if kwargs.get('usertype', None):
+                response.set_cookie('user_type', "extension")
+            return response
 
         return response
 
@@ -45,6 +48,7 @@ class loginUserView(View):
 
 
         if user is not None:
+            auth.login(request, user)
             if userType is not None:
                 refresh = RefreshToken.for_user(user)
                 # create cookies
@@ -53,7 +57,13 @@ class loginUserView(View):
                 response.set_cookie('access', str(refresh.access_token))
                 return response
 
-            auth.login(request, user)
+            next = request.COOKIES.get('next', None)
+            if next:
+                slug = request.COOKIES.get('next_args', None)
+                response = redirect(reverse(f"{next}", args=[slug]))
+                response.delete_cookie('next')
+                response.delete_cookie('next_args')
+                return response
             return redirect(reverse("manager:dashboard"))
 
         return render(request, self.template_name)
