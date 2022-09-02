@@ -11,6 +11,11 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
+from app_auth import models as AuthModels
+
+from django.template.loader import render_to_string
+from django.core.mail import EmailMessage
+from django.conf import settings
 import json
 import datetime
 from dateutil.relativedelta import relativedelta
@@ -27,6 +32,24 @@ myapi = paypalrestsdk.Api({
     "client_id": os.environ.get("PAYPAL_CLIENT_ID"),
     "client_secret": os.environ.get("PAYPAL_CLIENT_SECRET")
 })
+
+def send_mail(email, message):
+    email_body = render_to_string(
+        "email_message.html",
+        {
+            "review": "{}".format(message),
+        },
+    )
+    email = EmailMessage(
+        "Ilazy Payment",
+        email_body,
+        settings.DEFAULT_FROM_EMAIL,
+        [
+            email,
+        ],
+    )
+    
+    email.send(fail_silently=False)
 
 # Create your views here.
 class HomePageView(View):
@@ -76,6 +99,8 @@ class PackageDetailView(View):
 
         return render(request, self.template_name, context=context_data)
 
+
+@csrf_exempt
 def SubscriptionDeactivateView(request):
     if request.method == 'POST':
         slug = request.POST.get('slug')
@@ -134,7 +159,6 @@ class PaymentView(View):
 
 class CompletePaymentView(View):
     def post(self, request, *args, **kwargs):
-
         package_id = request.POST.get("package_id", "")
         pricing_id = request.POST.get("pricing_id", "")
         total_price = request.POST.get("total_price", "")
@@ -146,45 +170,62 @@ class CompletePaymentView(View):
 
         # every user has a free subscription, update that  
         subscription = models.Subscription.objects.filter(user=request.user.id, package_id=package_id).first()
-        if subscription.pricing.name.lower() != "Free".lower():            
-            ret = myapi.post(f"v1/billing/subscriptions/{subscription.order_key}/cancel")
+        current_pricing = subscription.pricing
+
+        try:
+            if subscription.pricing.name.lower() != "Free".lower():            
+                ret = myapi.post(f"v1/billing/subscriptions/{subscription.order_key}/cancel")
+                if ret.get("error"):
+                    messages.add_message(request, messages.ERROR, 'An Error occured. Please try again.')
+                    return redirect(reverse('manager:package', args=[models.Package.objects.filter(id=package.id).first().slug]))
+
+            if pricing.name.lower() == "Starter".lower():
+                if payment_duration.lower() == "monthly":
+                    plan_id = os.environ.get("STARTER_MONTHLY")
+                elif payment_duration.lower() == "annually":
+                    plan_id = os.environ.get("STARTER_ANNUAL")
+            elif pricing.name.lower() == "Master".lower()   :
+                if payment_duration.lower() == "monthly":
+                    plan_id = os.environ.get("MASTER_MONTHLY")
+                elif payment_duration.lower() == "annually":
+                    plan_id = os.environ.get("MASTER_ANNUAL")
+                    
+            data = {
+                "plan_id": plan_id
+            }
+
+            ret = myapi.post("v1/billing/subscriptions", data)
             if ret.get("error"):
                 messages.add_message(request, messages.ERROR, 'An Error occured. Please try again.')
                 return redirect(reverse('manager:package', args=[models.Package.objects.filter(id=package.id).first().slug]))
 
-        if pricing.name.lower() == "Starter".lower():
-            if payment_duration.lower() == "monthly":
-                plan_id = os.environ.get("STARTER_MONTHLY")
-            elif payment_duration.lower() == "annually":
-                plan_id = os.environ.get("STARTER_ANNUAL")
-        elif pricing.name.lower() == "Master".lower()   :
-            if payment_duration.lower() == "monthly":
-                plan_id = os.environ.get("MASTER_MONTHLY")
-            elif payment_duration.lower() == "annually":
-                plan_id = os.environ.get("MASTER_ANNUAL")
-                
-        data = {
-            "plan_id": plan_id
-        }
+            if ret['status'] == 'APPROVAL_PENDING':
+                user = request.user
+            
+                subscription.pricing=models.Pricing.objects.filter(id=pricing_id).first()
+                subscription.total_amount_paid=float(total_price)
+                subscription.start_date=timezone.now()
+                subscription.order_key=ret['id']
 
-        ret = myapi.post("v1/billing/subscriptions", data)
-        print(ret.get("error"))
-        if ret.get("error"):
-            messages.add_message(request, messages.ERROR, 'An Error occured. Please try again.')
-            return redirect(reverse('manager:package', args=[models.Package.objects.filter(id=package.id).first().slug]))
+                expiry_date = timezone.now() + datetime.timedelta(days=30)
 
-        if ret['status'] == 'APPROVAL_PENDING':
-            user = request.user
-          
-            subscription.pricing=models.Pricing.objects.filter(id=pricing_id).first()
-            subscription.total_amount_paid=float(total_price)
-            subscription.start_date=timezone.now()
-            subscription.order_key=ret['id']
+                if payment_duration == "annually":
+                    expiry_date = (datetime.date.today() + relativedelta(years=1)).strftime(
+                        "%Y-%m-%d"
+                    )
 
+                subscription.expiry_date=expiry_date
+
+                subscription.save()
+
+                redirect_url = paypal.get_url_from(ret['links'], 'approve')
+
+                return HttpResponseRedirect(redirect_url)
+        except Exception as e:
+            print(e)
+            subscription.pricing=current_pricing
             subscription.save()
-
-            redirect_url = paypal.get_url_from(ret['links'], 'approve')
-            return HttpResponseRedirect(redirect_url)
+            return redirect(reverse('manager:dashboard'))
 
 @require_POST
 @csrf_exempt
@@ -213,9 +254,32 @@ def paypal_webhooks(request):
         event_type = obj.get('event_type')
         resource = obj.get('resource')
 
-        if event_type == 'PAYMENT.SALE.COMPLETED':
-            paypal.set_paid_until(resource, paypal.SUBSCRIPTION)
+        if resource.get("status", None) == 'APPROVAL_PENDING':
+            billing_agreement_id = resource['id']
+            subscription = models.Subscription.objects.filter(order_key=billing_agreement_id).first()
+            email = AuthModels.User.objects.filter(id=subscription.user).first().email
+            send_mail(email, "Your payment as been initialized. Please wait for confirmation email.")
 
+        # elif event_type == "BILLING.SUBSCRIPTION.CANCELLED":
+        #     email = resource["subscriber"]["email_address"]
+        #     send_mail(email, "Your payment as been cancelled by PayPal. Please connect PayPal support.")
+        #     return redirect(reverse("manager:deactivate"))
+
+        # elif event_type == "BILLING.SUBSCRIPTION.SUSPENDED":
+        #     email = resource["subscriber"]["email_address"]
+        #     send_mail(email, "Your payment as been suspended by PayPal.")
+        #     return redirect(reverse("manager:deactivate"))
+
+        # elif event_type == 'BILLING.SUBSCRIPTION.PAYMENT.FAILED':
+        #     email = resource["subscriber"]["email_address"]
+        #     send_mail(email, "Your payment was unsuccessfull. Please try again.")
+
+        if event_type == "PAYMENT.SALE.COMPLETED":
+            billing_agreement_id = resource.get("billing_agreement_id", None)
+            subscription = models.Subscription.objects.filter(order_key=billing_agreement_id).first()
+            email = AuthModels.User.objects.filter(id=subscription.user).first().email
+            send_mail(email, "Your payment was successfull.")
+    
     return HttpResponse(status=200)
 
 
