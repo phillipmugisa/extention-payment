@@ -6,7 +6,8 @@
         <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.css" >
         <script src="https://cdn.tailwindcss.com"></script>
-        <script src="https://www.paypal.com/sdk/js?client-id=AURnMFnmRHVOgJGYN6GWYET8DhEv_eWhLRverpjiqXwFVZvN5eo1zQ1ws9hAC8innF938AC4rwKIsd_r&currency=USD" data-sdk-integration-source="button-factory" data-namespace="paypal"></script>
+        
+        <script src="https://www.paypal.com/sdk/js?client-id=AdoY6Euji9UokT-HMy3UBZnAenKPPGA3slyR4t46b0LoZ_7sh6UB429UkKNAfCt0K4Y8Hdh1oRlJYIli&vault=true&intent=subscription" data-sdk-integration-source="button-factory"></script>
     </head>
 
     <style>
@@ -49,82 +50,43 @@
         
         <main class="grid w-screen h-screen bg-white">
             <section class="flex gap-2 flex-col p-10 w-10/12 mx-auto">
-                <div class="flex justify-between p-3">
-                    <h3 class="text-2xl text-grey-800">Complete Payment</h3>
-                    <p class="test-lg">USD {{total_price}}</p>
+                <div class="flex justify-between py-3">
+                    <h3 class="text-2xl text-grey-800">Payment Details</h3>
                 </div>
                 <hr>
-                <div class="flex justify-center p-3" id="paypal-button-container"></div>
+                <div class="grid gap-1">
+                    <span class="flex gap-2 items-center">
+                        <p>Package Name: </p>
+                        <p class="capitalize text-lg">{{package.name}}</p>
+                    </span>
+                    <span class="flex gap-2 items-center">
+                        <p>Pricing Name: </p>
+                        <p class="capitalize text-lg">{{pricing.name}}</p>
+                    </span>
+                    <span class="flex gap-2 items-center">
+                        <p>Payment Duration: </p>
+                        <p class="capitalize text-lg">{{subscription_duration}}</p>
+                    </span>
+                    <span class="flex gap-2 items-center">
+                        <p>Total Price: </p>
+                        <p class="text-lg">USD {{total_price}}</p>
+                    </span>
+                </div>
+                <!-- <div class="flex justify-center p-3" id="paypal-button-container"></div> -->
                 <hr>
-                <a href="{% url 'manager:dashboard' %}" class="px-6 py-2 cursor-pointer text-gray-800 bg-white text-base rounded border border-gray-800 border-solid my-5 mx-auto">Cancel</a>
+                <div class="flex gap-3">
+                    <form action="{% url 'manager:complete-payment' %}" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="package_id" value="{{ package.id }}">
+                        <input type="hidden" name="pricing_id" value="{{ pricing.id }}">
+                        <input type="hidden" name="total_price" value="{{ total_price }}">
+                        <input type="hidden" name="payment_duration" value="{{ subscription_duration }}">
+                        <input type="submit" class="px-6 py-2 cursor-pointer text-center text-blue-900 font-bold text-base rounded my-5" style="background-color: #FFC439;" value="Pay with Paypal" />
+                    </form>
+
+                    <a href="{% url 'manager:dashboard' %}" class="px-6 py-2 cursor-pointer text-gray-800 bg-white text-base rounded border border-gray-800 border-solid my-5">Cancel</a>
+                </div>
             </section>
         </main>
-
-        <script>
-            document.addEventListener('DOMContentLoaded', () => {
-                function getCookie(name) {
-                    let cookieValue = null;
-                    if (document.cookie && document.cookie !== '') {
-                        const cookies = document.cookie.split(';');
-                        for (let i = 0; i < cookies.length; i++) {
-                            const cookie = cookies[i].trim();
-                            // Does this cookie string begin with the name we want?
-                            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                                break;
-                            }
-                        }
-                    }
-                    return cookieValue;
-                }
-
-                paypal.Buttons({
-
-                    style: {
-                        color: 'gold',
-                        shape: 'rect',
-                        label: 'paypal',
-                        layout: 'vertical'
-                    },
-            
-                    // Sets up the transaction when a payment button is clicked
-            
-                    createOrder: (data, actions) => {    
-                        return actions.order.create({    
-                            purchase_units: [{    
-                                amount: {
-                                    currency_code: 'USD',
-                                    value: '{{total_price}}'    
-                                }    
-                            }]    
-                        });    
-                    },
-            
-                    // Finalize the transaction after payer approval    
-                    onApprove: (data, actions) => {    
-                        let url = "{% url 'manager:complete-payment' %}";
-                        return fetch(url, {
-                            method: "POST",
-                            headers: {'X-CSRFToken': getCookie('csrftoken')},
-                            body: JSON.stringify({
-                                orderID: data.orderID,
-                                package_id: '{{package_id}}',
-                                pricing_id: '{{pricing_id}}',
-                                subscription_duration: '{{subscription_duration}}'
-                            })
-                        }).then((response) => {
-                            if (response.status >= 200 && response.status <= 299) {
-                                location.href = "{% url 'manager:dashboard' %}";
-                            }
-                            else {
-                                // cancel payment
-                            }
-                        })
-                    }
-            
-                }).render('#paypal-button-container');
-            
-            })
-        </script>
     </body>
 </html>

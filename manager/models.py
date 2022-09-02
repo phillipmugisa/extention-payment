@@ -6,6 +6,7 @@ import os
 import uuid
 from django.dispatch import receiver
 from django.db.models.signals import post_save
+from app_auth.models import User
 
 
 def get_file_path(instance, filename):
@@ -86,8 +87,30 @@ class Subscription(models.Model):
     active = models.BooleanField(_("Active"), default=True)
 
 
+    def __str__(self) -> str:
+        return User.objects.filter(id=self.user).first().username
+
+
 @receiver(post_save, sender=Pricing)
 def set_pricing(sender, instance, *args, **kwargs):
     if not instance.annualy_price and instance.annualy_price != 0:
         instance.annualy_price = int(instance.price * 12)
         instance.save()
+
+@receiver(post_save, sender=User)
+def set_dafault_package(sender, instance, *args, **kwargs):
+    if not Subscription.objects.filter(user = instance.pk):
+        # create subsription
+        subcription = Subscription(
+            user=instance.id,
+            user_type=instance.__class__.__name__,
+            package_id=Package.objects.all().first(),
+            pricing=Pricing.objects.filter(name="Free").first(),
+            expiry_date=timezone.now(),
+            total_amount_paid=0,
+            email=instance.email,
+            address="Not Set",
+            country_code="Not Set",
+            order_key="Not Set",
+        )
+        subcription.save()

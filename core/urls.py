@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
 from manager.views import HomePageView
+from manager import views
 
 from django.conf import settings
 from django.conf.urls.static import static
@@ -12,6 +13,7 @@ urlpatterns = [
     path("accounts/profile/", HomePageView.as_view()),
     path("admin/", admin.site.urls),
     path("accounts/", include("allauth.urls")),
+    path('paypal-webhook', views.paypal_webhooks, name='paypal_webhook'),
 ]
 
 if settings.DEBUG:
