@@ -20,21 +20,13 @@ class AliExpressSubcriptionRetrieveView(APIView):
 
         package = Package.objects.filter(name="Aliexpress Media Downloader").first()
 
-        if subscriptions:
-            for subscription in subscriptions:
-                response = dict()
-                response['user'] = {
-                    "username": user.username,
-                }
-                response['package'] = package.name
-                response['pricing'] = subscription.pricing.name
-                response['features'] = [feature.name for feature in subscription.pricing.pricing_feature.all()]
-        else:
+        for subscription in subscriptions:
+            response = dict()
             response['user'] = {
                 "username": user.username,
             }
             response['package'] = package.name
-            response['pricing'] = 'Free'
-            response['features'] = [feature.name for feature in Pricing.objects.filter(name='Free').first().pricing_feature.all().filter(package=package)]            
+            response['pricing'] = subscription.pricing.name
+            response['features'] = [feature.name for feature in subscription.pricing.pricing_feature.all()]       
 
         return Response(response)
