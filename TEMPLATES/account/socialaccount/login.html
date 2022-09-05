@@ -2,7 +2,7 @@
 {% load i18n %}
 
 {% block content %}
-  <div class="container mx-auto mt-20 grid gap-5 border border-gray-400 border-solid w-5/12 py-5 px-5">
+  <div class="container mx-auto mt-20 grid gap-5 border border-gray-400 border-solid w-11/12 md:6/12 py-5 px-5">
 
       {% if process == "connect" %}
       <h1>{% blocktrans with provider.name as provider %}Connect {{ provider }}{% endblocktrans %}</h1>
