@@ -222,9 +222,9 @@ class CompletePaymentView(View):
 
                 return HttpResponseRedirect(redirect_url)
         except Exception as e:
-            print(e)
             subscription.pricing=current_pricing
             subscription.save()
+            messages.add_message(request, messages.ERROR, 'An Error occured. Please try again.')
             return redirect(reverse('manager:dashboard'))
 
 @require_POST

@@ -30,3 +30,4 @@ class AliExpressSubcriptionRetrieveView(APIView):
             response['features'] = [feature.name for feature in subscription.pricing.pricing_feature.all()]       
 
         return Response(response)
+        

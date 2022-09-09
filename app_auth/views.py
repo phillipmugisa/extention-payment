@@ -64,9 +64,12 @@ class loginUserView(View):
                 response.delete_cookie('next')
                 response.delete_cookie('next_args')
                 return response
+            messages.add_message(request, messages.SUCCESS, 'Signed in as {}'.format(request.user.username))
             return redirect(reverse("manager:dashboard"))
 
-        return render(request, self.template_name)
+            
+        messages.add_message(request, messages.ERROR, 'Account Not Found.')
+        return redirect(reverse("app_auth:login"))
 
 class RegisterUserView(View):
     template_name = "account/register.html"
