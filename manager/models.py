@@ -60,7 +60,7 @@ class Pricing(models.Model):
 
 class Feature(models.Model):
     name = models.CharField(_("Name"), max_length=256, blank=False, null=False)
-    pricing = models.ManyToManyField(to=Pricing, related_name="pricing_feature", blank=True, null=True)
+    pricing = models.ManyToManyField(to=Pricing, related_name="pricing_feature")
     package = models.ForeignKey(
         to=Package, on_delete=models.CASCADE, related_name="pricion_package"
     )

@@ -182,6 +182,7 @@ class PricingCreateView(SupportOnlyAccessMixin, View):
     def post(self, request):
         pricing_name = request.POST.get("pricing_name")
         pricing_monthly_charge = int(request.POST.get("pricing_monthly_charge"))
+        annual_charge = int(request.POST.get("annual_charge"))
         pricing_package = request.POST.get("pricing_package")
 
         try:
@@ -199,7 +200,7 @@ class PricingCreateView(SupportOnlyAccessMixin, View):
                 )
                 return redirect(reverse("app_admin:pricing-create"))
             
-            pricing = ManagerModels.Pricing.objects.create(name=pricing_name, price=pricing_monthly_charge, package=package.first())
+            pricing = ManagerModels.Pricing.objects.create(name=pricing_name, price=pricing_monthly_charge, annualy_price=annual_charge, package=package.first())
 
             for feature_key in [obj_key for obj_key in request.POST.keys() if "feature" in obj_key]:
                 feature_name = request.POST.get(f"{feature_key}")
