@@ -152,9 +152,9 @@ class FeatureCreateView(SupportOnlyAccessMixin, View):
                     package=package
 
                 )
-                messages.add_message(
-                    request, messages.SUCCESS, "Created Successfully"
-                )
+            messages.add_message(
+                request, messages.SUCCESS, "Created Successfully"
+            )
         except:
             package = ManagerModels.Package.objects.filter(name=package_name).first()
             if package:
@@ -220,9 +220,9 @@ class PricingCreateView(SupportOnlyAccessMixin, View):
                 pricing.pricing_feature.add(feature)
 
                 feature.save()
-                messages.add_message(
-                    request, messages.SUCCESS, "Created Successfully"
-                )
+            messages.add_message(
+                request, messages.SUCCESS, "Created Successfully"
+            )
         except Exception as Err:
             pricing = ManagerModels.Package.objects.filter(name=pricing_name).first()
             if pricing:
