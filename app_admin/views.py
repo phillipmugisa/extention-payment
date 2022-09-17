@@ -182,7 +182,7 @@ class PricingCreateView(SupportOnlyAccessMixin, View):
     def post(self, request):
         pricing_name = request.POST.get("pricing_name")
         pricing_monthly_charge = int(request.POST.get("pricing_monthly_charge"))
-        annual_charge = int(request.POST.get("annual_charge"))
+        annual_charge = int(request.POST.get("pricing_annual_charge"))
         pricing_package = request.POST.get("pricing_package")
 
         try:
