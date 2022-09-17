@@ -1,0 +1,190 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ view_name }}</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon/favicon.ico' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon/favicon-16x16.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon/favicon-32x32.png' %}">
+    <link rel="apple-touch-icon" sizes="120x120" href="{% static 'favicon/apple-touch-icon.png' %}">
+    <link href="{% static 'icons/font-awesome-4.7.0/css/font-awesome.min.css' %}" rel="stylesheet"  type='text/css'>
+    <link rel="stylesheet" href="{% static 'utils.css' %}">
+    <link rel="stylesheet" href="{% static 'dashboards.css' %}">
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
+        integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body
+    class="admin-body cs-bg-white cs-grid"
+    style="
+            --white-color: #fff;
+            --accent-color: hsl(38, 95%, 47%);
+            --primary-color: hsl(0, 0%, 9%);
+            --primary-color-hover: hsl(0, 0%, 20%);
+            --secondary-color: hsl(213, 28%, 19%);
+            --secondary-color-hover: hsl(213, 28%, 14%);
+            --gap: 0rem;
+        "
+>
+    
+    <!-- sidenav -->
+    <aside class="admin-side-nav cs-grid cs-align-start" style="--gap: .5rem;align-content: flex-start;">
+        <div class="header cs-grid">
+            <div class="cs-grid cs-align-center" style="--gap: 2rem">
+                <div class="logo-wrapper cs-overflow-hidden">
+                    <img loading="lazy" src="https://ilazy.net/wp-content/uploads/2022/09/newLogoPSD.png" alt="Logo" class="logo" style="object-fit: contain;">
+                </div>
+            </div>
+            <hr style="border: 1px solid hsl(0, 0%, 95%);">
+        </div>
+        <div class="body cs-grid" style="--gap: 2rem;">
+            <div class="item-group cs-grid" style="--gap: 0rem;">
+                <!-- <h3 class="item-group-title cs-font-500 cs-text-md" style="color: hsl(0, 0%, 60%)">Navigation</h3> -->
+                <div class="items cs-grid" style="--gap: .1rem">
+                    <ul class="item list-none list-outside">
+                        <li>
+                            <a href="{% url 'app_admin:home' %}" class="{%if active_tab == 'Home'%} active {% endif %} side-tab br-sm cs-flex justify-start cs-align-center" style="--gap: .5rem;">
+                                <i class="fa fa-home cs-text-normal-md cs-text-primary"></i>
+                                <h5 class="item-label cs-font-500 cs-text-md cs-text-cs-bg-secondary">Home</h5>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footer cs-grid" style="align-self: flex-end;--gap: 1rem;">
+            <hr style="border: 1px solid hsl(0, 0%, 95%);">
+            <div class="cs-flex justify-center" style="--gap:1rem;">
+                <button class="btn icon-btn cs-bg-white cs-grid cs-justify-center cs-align-center br-sm">
+                    <i class="fa fa-cog"></i>
+                </button>
+                <a href="{% url 'manager:profile' %}" class="btn icon-btn cs-bg-white cs-grid cs-justify-center cs-align-center br-sm">
+                    <i class="fa fa-user"></i>
+                </a>
+                <a href="{% url 'manager:dashboard' %}" class="btn icon-btn cs-bg-white cs-grid cs-justify-center cs-align-center br-sm">
+                    <i class="fa fa-home"></i>
+                </a>
+            </div>
+            <a href="{% url 'app_auth:logout' %}" class="cs-grid btn outlined cs-text-md cs-font-500 br-sm cs-bg-hover-color" style="place-items: center;">Log out</a>
+        </div>
+    </aside>
+    <!-- sidenav -->
+
+    <!-- main -->
+    <main class="cs-grid admin-content-area" style="--gap: 1rem;">
+        <!-- header area -->
+            <header class="content-area-header cs-grid br-sm" style="--gap: .5rem;">
+                <div class="cs-grid cs-align-center" style="align-content: center;--gap: .35rem">
+                    <h1 class="section-title cs-font-700 cs-font-500 cs-text-secondary" style="block-size: 20px;margin: 0;font-size: 1.4rem;">Admin Dashboard</h1>
+                    <p class="cs-flex cs-text-md cs-text-secondary" style="gap: .5rem;">
+                        <a href="{% url 'app_admin:home' %}" style="color: hsla(213, 28%, 60%, 100%);">Home</a>
+                        {% if active_tab != 'Home' %}
+                            <span>/</span>
+                            <span>{{active_tab}}</span>
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="cs-grid">
+                    <!-- <form action="./search.html" class="cs-grid" style="align-self: center;">
+                        <div class="cs-flex form-group outline-input" style="align-items: center;--gap: 0">
+                            <i class="fa fa-search cs-text-body" style="color: hsl(0, 0%, 85%);"></i>
+                            <input type="text" name="search" id="search-bar" placeholder="Search...">
+                        </div>
+                    </form> -->
+                </div>
+                <div class="cs-grid justify-end cs-grid-flow-col align-center" style="justify-content: flex-end;--gap: 1rem">
+                    <a href="{% url 'manager:profile' %}" class="cs-flex br-md" style="--gap: 1rem;padding: .5rem 1rem;background-color: hsla(213, 28%, 70%, 10%);align-content: center;align-items: center;">
+                        <div class="cs-grid" style="--gap: .25rem;justify-items: flex-end;align-content: center;">
+                            <h4 class="cs-text-md cs-font-500" style="block-size: 14px;margin: 0;">{{ request.user.username }}</h4>
+                            <p class="cs-text-sm cs-font-500" style="color: hsl(0, 0%, 60%);">Support</p>
+                        </div>
+                        <div class="avator br-full cs-overflow-hidden">
+                            <img src="{% static 'profiledefault.png' %}" style="object-fit: cover;inline-size: 100%;block-size: 100%;" alt="">
+                        </div>
+                    </a>
+                </div>
+            </header>
+        <!-- header area -->
+
+        {% block content %}
+        {% endblock %}
+
+        <!-- section area -->
+    </main>
+    <!-- main -->
+
+    <script>
+        const navEmphCta = document.querySelector('#nav-emph-cta');
+        if (navEmphCta) {
+            navEmphCta.addEventListener('click', () => {
+                const ctaEmph = document.querySelector('.cta-emph');
+                ctaEmph.classList.toggle('cs-hidden');
+                ctaEmph.classList.toggle('cs-grid');
+            });
+        }
+
+        const handleAddInput = (target, subCategoryCount, subCategoryGroup, lastAddElem) => {
+            if (subCategoryCount == 10) return;
+            // remove add btn
+            lastAddElem.removeChild(target)
+            const deleteInputBtn = lastAddElem.querySelector('.delete-input');
+
+            // add delete btn
+            deleteInputBtn.classList.remove('cs-hidden');
+            deleteInputBtn.classList.add('cs-grid');
+
+            // handle delete inputs
+            deleteInputBtn.addEventListener('click', (e) => {
+                subCategoryGroup.removeChild(subCategoryGroup.querySelector(`.subcategory-inputs[data-subcategorycount="${subCategoryCount}"]`));
+            })
+
+            // create form element
+            const subCategoryElem = document.createElement('div');
+            subCategoryElem.classList.add(...['cs-grid', 'cs-align-center', 'subcategory-inputs']);
+            subCategoryElem.style.gridTemplateColumns = "2fr .1fr"
+
+            subCategoryElem.innerHTML = `
+                <input type="text" name='feature-${subCategoryCount + 1}' id="subcategory-${subCategoryCount + 1}" placeholder="Name" required list="features">
+                <button class="btn cs-grid cs-justify-center cs-align-center cs-bg-hover-color cs-text-secondary br-full" id="add-input" style="padding: 1rem .5rem;" onclick="(function(){
+                })();return false;">
+                    <i class="fa fa-plus"></i>
+                </button>
+
+                <button class="btn cs-justify-center cs-align-center cs-bg-hover-color cs-text-secondary br-full cs-hidden delete-input" data-subcategoryDeleteCcount="${subCategoryCount + 1}" style="padding: 1rem .5rem;" onclick="(function(){
+                })();return false;">
+                    <i class="fa fa-trash"></i>
+                </button>
+            `
+            let _subCategoryCount = subCategoryCount + 1;
+            
+            subCategoryElem.dataset['subcategorycount'] = _subCategoryCount;
+            subCategoryGroup.appendChild(subCategoryElem);
+
+            lastAddElem = subCategoryElem;
+
+            const addInputBtn = lastAddElem.querySelector('#add-input');
+            addInputBtn.addEventListener('click', () => handleAddInput(addInputBtn, _subCategoryCount, subCategoryGroup, lastAddElem));
+        }
+
+        // add form inputs
+        const categoryForm = document.querySelector('#category-form');
+        if (categoryForm && categoryForm != undefined) {
+            let subCategoryCount = 1;
+            const subCategoryGroup = document.querySelector('#subCategory-group');
+            let lastAddElem = document.querySelector(`.subcategory-inputs[data-subcategorycount="1"]`)
+
+
+            const addInputBtn = lastAddElem.querySelector('#add-input');
+            addInputBtn.addEventListener('click', () => handleAddInput(addInputBtn, subCategoryCount, subCategoryGroup, lastAddElem));
+        }
+    
+    </script>
+</body>
+</html>

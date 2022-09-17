@@ -13,7 +13,8 @@ urlpatterns = [
     path("accounts/profile/", HomePageView.as_view()),
     path("admin/", admin.site.urls),
     path("accounts/", include("allauth.urls")),
-    path('paypal-webhook', views.paypal_webhooks, name='paypal_webhook'),
+    path("support/admin/", include("app_admin.urls", namespace="app_admin")),
+    path('paypal-webhook/', views.paypal_webhooks, name='paypal_webhook'),
 ]
 
 if settings.DEBUG:

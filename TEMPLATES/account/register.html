@@ -1,7 +1,47 @@
-{% extends '../layout.html' %}
-{% load socialaccount %}
-{% block content %}
 {% load i18n %}
+{% load socialaccount %}
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ILAZY</title>
+        <meta name="description" content="">
+        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.css" >
+        <link rel="stylesheet" href="{% static 'main.css' %}">
+        <link rel="stylesheet" href="{% static 'tailcss.css' %}">
+        <link rel="icon" type="image/x-icon" href="{% static 'favicon/favicon.ico' %}">
+        <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon/favicon-16x16.png' %}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon/favicon-32x32.png' %}">
+        <link rel="apple-touch-icon" sizes="120x120" href="{% static 'favicon/apple-touch-icon.png' %}">
+    </head>
+
+    <style>
+        body, main {
+            overflow-x: hidden;
+        }
+        .details-view {
+            display: grid;
+            grid-template-columns: .6fr 2fr;
+            gap: 2rem;
+        }
+        .detail-sidebar {
+            grid-template-columns: 1fr;
+            grid-template-rows: .2fr 1fr .1fr;
+            align-items: flex-start;
+        }
+        .user-profile .img-wrapper {
+            width: 25%;
+            aspect-ratio: 1;
+            overflow: hidden;
+            border-radius: 50%;
+        }
+    </style>
+
+    <body>
+        <!-- prompt login -->
+        <main>
+
 
 <div class="ilazyAppLoginSignup">
     <div class="ilazyAppLoginSignup_Form">
@@ -44,6 +84,7 @@
                     <div class="grid gap-2">
                         <input class="px-4 py-2 cursor-pointer text-white text-base rounded" type="submit" value="Register" style="background-color: #2574E4;">
                     </div>
+                    <p class="text-base text-center">By signing up you agree to the <a class="bold" style="color: #0D2065;" href="https://ilazy.net/terms-and-conditions/">Terms of Service</a> and <a class="bold" style="color: #0D2065;" href="https://ilazy.net/privacy-policy/">Privacy Policy</a>.</p>
                 </form>
                 <a href="{% url 'app_auth:login' %}" class="text-center">Already Have An Account</a>
             </div>
@@ -59,4 +100,11 @@
     <div class="ilazyAppLoginSignup_Img"></div>
   </div>
 
-{% endblock content %}
+  <!-- section area -->
+</main>
+<!-- main -->
+
+<script src="{% static 'js/admin.js' %}"></script>
+<script src="{% static 'js/createChart.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,74 @@
+{% extends './utils/layout.html' %}
+{% load static %}
+{% load i18n %}
+{% block content %}
+    <!-- section area -->
+        <!-- section selectors -->
+        <nav data-page="manager" class="section-nav-area br-sm cs-bg-white outlined">
+            <ul class="cs-grid section-nav list-none list-outside overflow-hidden" style="--gap: .5rem;">
+                <ul class="cs-flex">
+                    <li id="manager-overview-activator" class="cs-text-md cs-font-500"><a href="{% url 'app_admin:home' %}">Overview</a></li>
+                    <li id="manager-showroom-activator" class="cs-text-md cs-font-500"><a href="{% url 'app_admin:subscriptions' %}">Subscriptions</a></li>
+                    <li id="manager-services-activator"class="cs-text-md cs-font-500"><a href="{% url 'app_admin:services' %}">Services</a></li>
+                    <li id="manager-memberships-activator"class="cs-text-md cs-font-500"><a href="{% url 'app_admin:users' %}">Users</a></li>
+                    <li id="manager-memberships-activator"class="cs-text-md cs-font-500"><a href="{% url 'app_admin:pricings' %}">Pricing</a></li>
+                </ul>
+                <ul class="nav-emph-cta" style="justify-self: flex-end;align-self: center;margin-inline-end: .5rem;">
+                    <li id="nav-emph-cta" class="cs-flex cs-text-md cs-bg-secondary cs-font-500 br-sm emph" style="--text-color: #fff;--gap: .5rem;align-items: center;">
+                        <i class="fa fa-plus"></i>
+                        <span>Create</span>
+                    </li>
+                    <ul class="cs-hidden cs-bg-white outlined br-sm cta-emph" style="--gap: .15rem;">
+                        <li class="cs-flex cs-text-md cs-bg-secondary cs-font-500 emph">
+                            <a style="--gap: .5rem;align-items: center;" class="cs-flex cs-text-white cs-text-md" href="{% url 'app_admin:pricing-create' %}">
+
+                            <i class="fa fa-plus"></i>
+                            <span>Pricing</span>
+                            </a>
+                        </li>
+                        <li class="cs-flex cs-text-md cs-bg-secondary cs-font-500 emph">
+                            <a style="--gap: .5rem;align-items: center;" class="cs-flex cs-text-white cs-text-md" href="{% url 'app_admin:features-create' %}">
+                                <i class="fa fa-plus"></i>
+                                <span>Service</span>
+                            </a>
+                        </li>
+                    </ul>
+                </ul>
+            </ul>
+        </nav>
+
+        <section id="manager-memberships-section" class="cs-grid br-sm" style="--gap: 1rem;">
+            <table>
+                <thead>
+                    <tr class="cs-bg-hover-color cs-text-md cs-text-secondary cs-font-600">
+                        <th>No.</th>
+                        <th>Username</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Joined On</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for subscription in users.results %}
+                    <tr class="cs-bg-hover-color br-md cs-text-md">
+                        <th>{{ forloop.counter }}</th>
+                        <th>{{user.username}}</th>
+                        <th>{{user.first_name}}</th>
+                        <th>{{user.last_name}}</th>
+                        <th>{{user.date_joined}}</th>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr class="cs-bg-hover-color cs-text-md cs-text-secondary cs-font-600">
+                        <th>No.</th>
+                        <th>Username</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Joined On</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </section>
+
+{% endblock %}

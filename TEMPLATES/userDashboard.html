@@ -1,65 +1,34 @@
 {% extends 'layout.html' %}
-{% block content %}       
-        
-        <main class="grid w-screen h-screen bg-white">
-            <section class="details-view p-10">
-                <div class="detail-sidebar grid gap-3 content-start p-3 border border-gray-300 border-solid rounded-lg">
-                    <!-- user profile  -->
-                    <!-- <div class="user-profile flex gap-6 items-center">
-                        <div class="img-wrapper">
-                            <img src="https://images.unsplash.com/photo-1542596594-649edbc13630?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8OXx8eW91dGglMjBnaXJsfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60" alt="">
+{% block content %}
+    <div class="p-3 border border-gray-300 border-solid rounded-lg">
+        <div class="grid gap-3 px-2 py-1">
+            {% if messages %}
+                {% for message in messages %}
+                    {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %} 
+                        <div class="flex justify-between content-center text-normal br-sm font-600" style="border: 1px solid rgb(236, 35, 35);color: rgb(236, 35, 35); padding: .5rem 1.5rem" onclick="(function(){event.target.style.display = 'none';return false;})()">
+                            <p>{{ message }}</p>
+                            <i style="align-self: center;" onclick="(function(){event.target.parentNode.style.display = 'none';return false;})()" class="fa fa-close"></i>
                         </div>
-                        <div class="grid gap-sm content-center">
-                            <h4 class="text-base font-medium text-gray-600"><span class="text-gray-400">@</span>{{user.username}}</h4> 
-                            <h4 class="text-base font-medium text-gray-800">{{user.first_name}} {{user.last_name}}</h4> 
+                    {% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %} 
+                        <div class="flex justify-between content-center text-normal br-sm font-600" style="border: 1px solid rgb(37, 141, 2930);color: rgb(37, 141, 2930); padding: .5rem 1.5rem" onclick="(function(){event.target.style.display = 'none';return false;})()">
+                            <p>{{ message }}</p>
+                            <i style="align-self: center;" onclick="(function(){event.target.parentNode.style.display = 'none';return false;})()" class="fa fa-close"></i>
                         </div>
-                    </div> -->
-                    <div class="grid gap-4">
-                        <a class="px-6 py-2 cursor-pointer text-gray-800 bg-white text-base rounded border border-gray-800 border-solid" href="{% url 'manager:dashboard' %}">Available Services</a>
-                        <div class="grid gap-3">
-                            {% for subscription in subscriptions %}
-                                <a href="{% url 'manager:package' subscription.package_id.slug %}" class="px-6 py-2 cursor-pointer text-gray-800 bg-white text-base rounded border border-gray-800 border-solid">
-                                    <span>{{subscription.package_id.name}}</span>
-                                </a>
-                            {% endfor %}
-                        </div>
-                        <a class="px-6 py-2 cursor-pointer text-gray-800 bg-white text-base rounded border border-gray-800 border-solid" href="{% url 'manager:profile' %}">Account Settings</a>
-                    </div>
-                    <div class="grid justify-items-center items-center self-end">
-                        <a class="px-6 py-2 cursor-pointer bg-gray-800 text-white text-base rounded hover:bg-black" href="{% url 'app_auth:logout' %}">Logout</a>
-                    </div>
-                </div>
-                <div class="p-3 border border-gray-300 border-solid rounded-lg">
-                    <div class="grid gap-3 px-2 py-1">
-                        {% if messages %}
-                            {% for message in messages %}
-                                {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %} 
-                                    <div class="flex justify-between content-center text-normal br-sm font-600" style="border: 1px solid rgb(236, 35, 35);color: rgb(236, 35, 35); padding: .5rem 1.5rem" onclick="(function(){event.target.style.display = 'none';return false;})()">
-                                        <p>{{ message }}</p>
-                                        <i style="align-self: center;" onclick="(function(){event.target.parentNode.style.display = 'none';return false;})()" class="fa fa-close"></i>
-                                    </div>
-                                {% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %} 
-                                    <div class="flex justify-between content-center text-normal br-sm font-600" style="border: 1px solid rgb(37, 141, 2930);color: rgb(37, 141, 2930); padding: .5rem 1.5rem" onclick="(function(){event.target.style.display = 'none';return false;})()">
-                                        <p>{{ message }}</p>
-                                        <i style="align-self: center;" onclick="(function(){event.target.parentNode.style.display = 'none';return false;})()" class="fa fa-close"></i>
-                                    </div>
-                                {% endif %}
-                            {% endfor %}
-                        {% endif %}
-                        <h3 class="text-lg text-gray-800">Available Services</h3>
-                        <div class="grid grid-cols-4 gap-3">
-                            {% for package in packages %}
-                                <a href="{% url 'manager:package' package.slug %}" class="flex gap-3 justify-items-center items-center border border-gray-200 border-solid px-3 py-3 rounded">
-                                    <span class="text-4xl" style="border-radius: 5px;width: 80px;object-fit: cover;overflow: hidden;aspect-ratio: 1;">
-                                        <img src="/media/{{ package.img_url }}" alt="">
-                                    </span>
-                                    <h3 class="text-base text-gray-800">{{ package.name }}</h3>
-                                </a>
-                            {%endfor%}
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </main>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+            <h3 class="text-lg text-gray-800">Available Services</h3>
+            <div class="grid grid-cols-4 gap-3">
+                {% for package in packages %}
+                    <a href="{% url 'manager:package' package.slug %}" class="flex gap-3 justify-items-center items-center border border-gray-200 border-solid px-3 py-3 rounded">
+                        <span class="text-4xl" style="border-radius: 5px;width: 80px;object-fit: cover;overflow: hidden;aspect-ratio: 1;">
+                            <img src="/media/{{ package.img_url }}" alt="">
+                        </span>
+                        <h3 class="text-base text-gray-800">{{ package.name }}</h3>
+                    </a>
+                {%endfor%}
+            </div>
+        </div>
+    </div>
 
 {% endblock content %}

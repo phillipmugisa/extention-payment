@@ -8,13 +8,15 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.css" >
         <link rel="stylesheet" href="{% static 'main.css' %}">
         <link rel="stylesheet" href="{% static 'tailcss.css' %}">
+        <link rel="icon" type="image/x-icon" href="{% static 'favicon/favicon.ico' %}">
+        <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon/favicon-16x16.png' %}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon/favicon-32x32.png' %}">
+        <link rel="apple-touch-icon" sizes="120x120" href="{% static 'favicon/apple-touch-icon.png' %}">
     </head>
 
     <style>
-        img {
-            /* width: 100% !important;
-            height: 100% !important; */
-            /* object-fit: cover !important; */
+        body, main {
+            overflow-x: hidden;
         }
         .details-view {
             display: grid;
@@ -35,11 +37,35 @@
     </style>
 
     <body>
-        <!-- prompt login -->
+        <!-- prompt login -->       
+        
+        <main class="grid w-screen h-screen bg-white">
+            <section class="details-view p-10">
+                <div class="detail-sidebar grid gap-3 content-start p-3 border border-gray-300 border-solid rounded-lg">
+                    <div class="grid gap-4">
+                        <a class="px-6 py-2 cursor-pointer text-gray-800 bg-white text-base rounded border border-gray-800 border-solid" href="{% url 'manager:profile' %}">Account</a>
+                        <a class="px-6 py-2 cursor-pointer text-gray-800 bg-white text-base rounded border border-gray-800 border-solid" href="{% url 'manager:dashboard' %}">Services</a>
+                        <div class="grid gap-3">
+                            {% for subscription in subscriptions %}
+                                <a href="{% url 'manager:package' subscription.package_id.slug %}" class="px-6 py-2 cursor-pointer text-gray-800 bg-white text-base rounded border border-gray-800 border-solid">
+                                    <span>Subscriptions</span>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="flex justify-items-center justify-center gap-4 items-center self-end">
+                        {% if request.user.is_superuser %}
+                        <a class="px-6 py-2 cursor-pointer bg-blue-400 text-white text-base rounded" href="{% url 'app_admin:home' %}">Admin</a>
+                        {% endif %}
+                        <a class="px-6 py-2 cursor-pointer bg-gray-800 text-white text-base rounded hover:bg-black" href="{% url 'app_auth:logout' %}">Logout</a>
+                    </div>
+                </div>
 
             {% block content %}
 
             {% endblock content %}
+            </section>
+        </main>
 
     </body>
 </html>

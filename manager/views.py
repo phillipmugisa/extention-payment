@@ -120,6 +120,9 @@ def SubscriptionDeactivateView(request):
         subscription.order_key="Not Set"
         subscription.save()
         return redirect(reverse('manager:dashboard'))
+    else:
+        messages.add_message(request, messages.ERROR, 'Invalid Request.')
+        return redirect(reverse('manager:dashboard'))
 
 class PaymentView(View):
     template_name = "payment.html"
@@ -202,7 +205,8 @@ class CompletePaymentView(View):
             if ret['status'] == 'APPROVAL_PENDING':
                 user = request.user
             
-                subscription.pricing=models.Pricing.objects.filter(id=pricing_id).first()
+                subscription.previous_pricing = subscription.pricing
+                subscription.upgrading_to = models.Pricing.objects.filter(id=pricing_id).first()
                 subscription.total_amount_paid=float(total_price)
                 subscription.start_date=timezone.now()
                 subscription.order_key=ret['id']
@@ -273,12 +277,23 @@ def paypal_webhooks(request):
         # elif event_type == 'BILLING.SUBSCRIPTION.PAYMENT.FAILED':
         #     email = resource["subscriber"]["email_address"]
         #     send_mail(email, "Your payment was unsuccessfull. Please try again.")
-
+        
         if event_type == "PAYMENT.SALE.COMPLETED":
             billing_agreement_id = resource.get("billing_agreement_id", None)
             subscription = models.Subscription.objects.filter(order_key=billing_agreement_id).first()
             email = AuthModels.User.objects.filter(id=subscription.user).first().email
             send_mail(email, "Your payment was successfull.")
+
+            subscription.pricing = subscription.upgrading_to
+            subscription.payment_completed = True
+            subscription.save()
+        elif event_type not in ["BILLING.SUBSCRIPTION.CREATED", "BILLING.SUBSCRIPTION.ACTIVATED"]:
+            # billing_agreement_id = resource.get("billing_agreement_id", None)
+            # subscription = models.Subscription.objects.filter(order_key=billing_agreement_id).first()
+            # subscription.payment_completed = False
+            # subscription.pricing = subscription.previous_pricing
+            # subscription.save()
+            pass
     
     return HttpResponse(status=200)
 

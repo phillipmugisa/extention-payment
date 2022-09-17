@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "manager.apps.ManagerConfig",
     "app_auth.apps.AppAuthConfig",
     "api.apps.ApiConfig",
+    "app_admin.apps.AppAdminConfig",
     'rest_framework',
     "allauth",
     "allauth.account",

@@ -60,7 +60,7 @@ class Pricing(models.Model):
 
 class Feature(models.Model):
     name = models.CharField(_("Name"), max_length=256, blank=False, null=False)
-    pricing = models.ManyToManyField(to=Pricing, related_name="pricing_feature")
+    pricing = models.ManyToManyField(to=Pricing, related_name="pricing_feature", blank=True, null=True)
     package = models.ForeignKey(
         to=Package, on_delete=models.CASCADE, related_name="pricion_package"
     )
@@ -73,7 +73,9 @@ class Subscription(models.Model):
     user = models.IntegerField(_("User id"))
     user_type = models.CharField(_("User Type"), max_length=20, default="User")
     package_id = models.ForeignKey(to=Package, on_delete=models.CASCADE)
+    previous_pricing = models.ForeignKey(to=Pricing, on_delete=models.CASCADE, blank=True, null=True, related_name="previous_pricing")
     pricing = models.ForeignKey(to=Pricing, on_delete=models.CASCADE)
+    upgrading_to = models.ForeignKey(to=Pricing, on_delete=models.CASCADE, blank=True, null=True, related_name="upgrading_to")
     total_amount_paid = models.DecimalField(
         _("Total Amount Paid"), decimal_places=2, max_digits=8
     )
@@ -85,10 +87,12 @@ class Subscription(models.Model):
     order_key = models.CharField(_("Order key"), max_length=256)
     expired = models.BooleanField(_("Expired"), default=False)
     active = models.BooleanField(_("Active"), default=True)
+    payment_completed = models.BooleanField(_("Payment Completed"), default=False)
 
 
     def __str__(self) -> str:
-        return User.objects.filter(id=self.user).first().username
+        # return User.objects.filter(id=self.user).first().username
+        return self.pricing.name
 
 
 @receiver(post_save, sender=Pricing)

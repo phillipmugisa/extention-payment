@@ -1,66 +1,112 @@
-{% extends '../layout.html' %}
 {% load socialaccount %}
-{% block content %}
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ILAZY</title>
+        <meta name="description" content="">
+        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.css" >
+        <link rel="stylesheet" href="{% static 'main.css' %}">
+        <link rel="stylesheet" href="{% static 'tailcss.css' %}">
+        <link rel="icon" type="image/x-icon" href="{% static 'favicon/favicon.ico' %}">
+        <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon/favicon-16x16.png' %}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon/favicon-32x32.png' %}">
+        <link rel="apple-touch-icon" sizes="120x120" href="{% static 'favicon/apple-touch-icon.png' %}">
+    </head>
 
-<div class="ilazyAppLoginSignup">
-    <div class="ilazyAppLoginSignup_Form">
-        <div class="ilazyAppLoginSignup_Form_logo">
-            <img src="https://ilazy.net/wp-content/uploads/2022/09/newLogoPSD.png">
-        </div>
-        <div class="grid gap-4 border border-slate-400 border-solid py-10 px-10 rounded-lg">
-            <h2 class="text-2xl text-left" style="color: #0D2065;">Welcome to ILazy Extensions</h2>
-            <hr>
-            {% if messages %}
-                {% for message in messages %}
-                    {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %} 
-                        <div class="flex justify-between content-center text-normal br-sm font-600" style="border: 1px solid rgb(236, 35, 35);color: rgb(236, 35, 35); padding: .5rem 1.5rem" onclick="(function(){event.target.style.display = 'none';return false;})()">
-                            <p>{{ message }}</p>
-                            <i style="align-self: center;" onclick="(function(){event.target.parentNode.style.display = 'none';return false;})()" class="fa fa-close"></i>
+    <style>
+        body, main {
+            overflow-x: hidden;
+        }
+        .details-view {
+            display: grid;
+            grid-template-columns: .6fr 2fr;
+            gap: 2rem;
+        }
+        .detail-sidebar {
+            grid-template-columns: 1fr;
+            grid-template-rows: .2fr 1fr .1fr;
+            align-items: flex-start;
+        }
+        .user-profile .img-wrapper {
+            width: 25%;
+            aspect-ratio: 1;
+            overflow: hidden;
+            border-radius: 50%;
+        }
+    </style>
+
+    <body>
+        <!-- prompt login -->
+        <main>
+
+            <div class="ilazyAppLoginSignup">
+                <div class="ilazyAppLoginSignup_Form">
+                    <div class="ilazyAppLoginSignup_Form_logo">
+                        <img src="https://ilazy.net/wp-content/uploads/2022/09/newLogoPSD.png">
+                    </div>
+                    <div class="grid gap-4 border border-slate-400 border-solid py-10 px-10 rounded-lg">
+                        <h2 class="text-2xl text-left" style="color: #0D2065;">Welcome to ILazy Extensions</h2>
+                        <hr>
+                        {% if messages %}
+                            {% for message in messages %}
+                                {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %} 
+                                    <div class="flex justify-between content-center text-normal br-sm font-600" style="border: 1px solid rgb(236, 35, 35);color: rgb(236, 35, 35); padding: .5rem 1.5rem" onclick="(function(){event.target.style.display = 'none';return false;})()">
+                                        <p>{{ message }}</p>
+                                        <i style="align-self: center;" onclick="(function(){event.target.parentNode.style.display = 'none';return false;})()" class="fa fa-close"></i>
+                                    </div>
+                                {% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %} 
+                                    <div class="flex justify-between content-center text-normal br-sm font-600" style="border: 1px solid rgb(37, 141, 2930);color: rgb(37, 141, 2930); padding: .5rem 1.5rem" onclick="(function(){event.target.style.display = 'none';return false;})()">
+                                        <p>{{ message }}</p>
+                                        <i style="align-self: center;" onclick="(function(){event.target.parentNode.style.display = 'none';return false;})()" class="fa fa-close"></i>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+
+                        <div class="grid gap-4">
+                            <form action="{% url 'app_auth:login' %}" method="post" class="grid gap-4">
+                                {% csrf_token %}
+                                <div class="grid gap-2">
+                                    <label class="text-gray-700" for="">Username</label>
+                                    <input type="text" class="px-4 py-2 border border-gray-400 border-solid rounded w-full focus:border-gray-500" name="username" required>
+                                </div>
+                                {% if userType %}
+                                    <input type="hidden" class="px-4 py-2 border border-gray-400 border-solid rounded w-full focus:border-gray-500" value="{{userType}}" name="userType">
+                                {% endif %}
+                                <div class="grid gap-2">
+                                    <label class="text-gray-700" for="">Password</label>
+                                    <input type="password" class="px-4 py-2 border border-gray-400 border-solid rounded w-full focus:border-gray-500" name="password" required>
+                                </div>
+                                <div class="grid gap-2">
+                                    <input class="px-4 py-2 cursor-pointer text-white text-base rounded" type="submit" value="Sign In" style="background-color: #2574E4;">
+                                </div>
+                            </form>
+                            <a href="{% url 'app_auth:register' %}" class="text-center">Register Account</a>
                         </div>
-                    {% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %} 
-                        <div class="flex justify-between content-center text-normal br-sm font-600" style="border: 1px solid rgb(37, 141, 2930);color: rgb(37, 141, 2930); padding: .5rem 1.5rem" onclick="(function(){event.target.style.display = 'none';return false;})()">
-                            <p>{{ message }}</p>
-                            <i style="align-self: center;" onclick="(function(){event.target.parentNode.style.display = 'none';return false;})()" class="fa fa-close"></i>
+                        <hr>
+                        <div class="social-login flex gap-4 flex-wrap">
+                            <a href="{% provider_login_url 'google' %}{% if userType %}?request_user=extension{% endif %}" class="border border-gray-300 border-solid px-6 py-2 rounded-md flex gap-4 items-baseline flex justify-center" style="inline-size: 100%;">
+                                <i class="text-xl fa fa-google"></i>
+                                <span class="text-base text-gray-800">Continue With Google</span>
+                            </a>
+                            <!-- <a href="" class="border border-gray-300 border-solid px-6 py-2 rounded-md flex gap-2 items-baseline">
+                                <i class="text-xl fa fa-linkedin"></i>
+                                <span class="text-base text-gray-800">Login With LinkedIn</span>
+                            </a> -->
                         </div>
-                    {% endif %}
-                {% endfor %}
-            {% endif %}
-
-            <div class="grid gap-4">
-                <form action="{% url 'app_auth:login' %}" method="post" class="grid gap-4">
-                    {% csrf_token %}
-                    <div class="grid gap-2">
-                        <label class="text-gray-700" for="">Username</label>
-                        <input type="text" class="px-4 py-2 border border-gray-400 border-solid rounded w-full focus:border-gray-500" name="username" required>
                     </div>
-                    {% if userType %}
-                        <input type="hidden" class="px-4 py-2 border border-gray-400 border-solid rounded w-full focus:border-gray-500" value="{{userType}}" name="userType">
-                    {% endif %}
-                    <div class="grid gap-2">
-                        <label class="text-gray-700" for="">Password</label>
-                        <input type="password" class="px-4 py-2 border border-gray-400 border-solid rounded w-full focus:border-gray-500" name="password" required>
-                    </div>
-                    <div class="grid gap-2">
-                        <input class="px-4 py-2 cursor-pointer text-white text-base rounded" type="submit" value="Sign In" style="background-color: #2574E4;">
-                    </div>
-                </form>
-                <a href="{% url 'app_auth:register' %}" class="text-center">Register Account</a>
+                </div>
+                <div class="ilazyAppLoginSignup_Img">
+                </div>
             </div>
-            <hr>
-            <div class="social-login flex gap-4 flex-wrap">
-                <a href="{% provider_login_url 'google' %}{% if userType %}?request_user=extension{% endif %}" class="border border-gray-300 border-solid px-6 py-2 rounded-md flex gap-4 items-baseline flex justify-center" style="inline-size: 100%;">
-                    <i class="text-xl fa fa-google"></i>
-                    <span class="text-base text-gray-800">Continue With Google</span>
-                </a>
-                <!-- <a href="" class="border border-gray-300 border-solid px-6 py-2 rounded-md flex gap-2 items-baseline">
-                    <i class="text-xl fa fa-linkedin"></i>
-                    <span class="text-base text-gray-800">Login With LinkedIn</span>
-                </a> -->
-            </div>
-        </div>
-    </div>
-    <div class="ilazyAppLoginSignup_Img">
-    </div>
-</div>
 
-{% endblock content %}
+            <!-- section area -->
+        </main>
+        <!-- main -->
+
+        <script src="{% static 'js/admin.js' %}"></script>
+        <script src="{% static 'js/createChart.js' %}"></script>
+    </body>
+</html>
