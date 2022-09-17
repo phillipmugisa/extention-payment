@@ -6,7 +6,7 @@ from django.contrib.auth.mixins import AccessMixin
 class SupportOnlyAccessMixin(AccessMixin):
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
-            return redirect(reverse("auth_app:login"))
+            return redirect(reverse("app_auth:login"))
 
         elif not (
             request.user.is_authenticated
