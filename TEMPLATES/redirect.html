@@ -1,0 +1,101 @@
+{% load socialaccount %}
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ILAZY</title>
+        <meta name="description" content="">
+        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.css" >
+        <link rel="stylesheet" href="{% static 'main.css' %}">
+        <link rel="stylesheet" href="{% static 'tailcss.css' %}">
+        <link rel="icon" type="image/x-icon" href="{% static 'favicon/favicon.ico' %}">
+        <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon/favicon-16x16.png' %}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon/favicon-32x32.png' %}">
+        <link rel="apple-touch-icon" sizes="120x120" href="{% static 'favicon/apple-touch-icon.png' %}">
+    </head>
+
+    <style>
+        section {
+            display: grid;
+            place-items: center;
+            block-size: 100vh;
+            inline-size: 100vw;
+            overflow: hidden;
+        }
+        .logo {
+            display: grid;
+            inline-size: 10rem;
+        }
+        section .body {
+            display: grid;
+            gap: 1rem;
+        }
+        section .content {
+            display: grid;
+            justify-items: center;
+            gap: .6rem;
+        }
+        section .content p {
+            line-height: 2.4rem;
+            font-weight: bolder;
+            font-size: 1.8rem;
+            color: #0D2065;
+            text-align: center;
+            margin: 0;
+        }
+        .link {
+            font-weight: light;
+            color: hsl(222, 88%, 30%);
+
+        }
+    </style>
+
+    <body>
+        <!-- prompt login -->
+        <main>
+            
+            <section>
+                <div class="body">
+                    <div class="content">
+                        <div class="logo">
+                            <img src="https://ilazy.net/wp-content/uploads/2022/09/newLogoPSD.png">
+                        </div>
+                        <span>
+                            <p>Meet you at</p>
+                            <p>{{ source_name }}</p>
+                            <p>in 3 seconds</p>
+                        </span>
+                        <a class="link" href="{% url 'manager:dashboard' %}">Got Stuck? Click<span style="font-weight: bold;"> Here</span></a>
+                    </div>
+                </div>
+
+            </section>
+            <!-- section area -->
+        </main>
+        <!-- main -->
+
+        <script src="{% static 'js/admin.js' %}"></script>
+        <script src="{% static 'js/createChart.js' %}"></script>
+    </body>
+
+    {{ source_name|json_script:"source_name" }}
+    {{ source_link|json_script:"source_link" }}
+    <script>
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const chatList = document.querySelector('.chat-list');
+            const source_name = JSON.parse(document.getElementById('source_name').textContent);
+            const source_link = JSON.parse(document.getElementById('source_link').textContent);
+    
+            const redirect = () => {
+                window.location.href = source_link;
+            }
+
+            setTimeout(redirect, 5000);
+
+        })
+    
+
+    </script>
+</html>
