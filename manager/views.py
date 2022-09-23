@@ -308,3 +308,19 @@ def Profile(request):
         ).order_by("-id")
     }
     return render(request, template_name='profile.html', context=context_data)
+
+class ExtensionRedirect(View):
+    template_name = "userDashboard.html"
+
+    def get(self, request, *args, **kwargs):
+        source_name = request.GET.get("source_name")
+        content_data = {
+            "source_name" : source_name,
+            "source_link" : f"https://{source_name}"
+        }
+
+        print("*"*40)
+        print(content_data)
+        print("*"*40)
+
+        return render(request, "./redirect.html", context=content_data)

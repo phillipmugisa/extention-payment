@@ -10,6 +10,7 @@ urlpatterns = [
     path("payment/", views.PaymentView.as_view(), name="payment"),
     path("deactivate/", views.SubscriptionDeactivateView, name="deactivate"),
     path("profile/", views.Profile, name="profile"),
+    path("redirect/", views.ExtensionRedirect.as_view(), name="redirect"),
     path(
         "complete-payment/",
         views.CompletePaymentView.as_view(),
