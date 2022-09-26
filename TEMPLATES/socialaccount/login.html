@@ -1,33 +1,72 @@
-{% extends '../layout.html' %}
 {% load socialaccount %}
-{% block content %}
+{% load static %}
 {% load i18n %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ILAZY</title>
+        <meta name="description" content="">
+        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.css" >
+        <link rel="stylesheet" href="{% static 'main.css' %}">
+        <link rel="stylesheet" href="{% static 'tailcss.css' %}">
+        <link rel="icon" type="image/x-icon" href="{% static 'favicon/favicon.ico' %}">
+        <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon/favicon-16x16.png' %}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon/favicon-32x32.png' %}">
+        <link rel="apple-touch-icon" sizes="120x120" href="{% static 'favicon/apple-touch-icon.png' %}">
+    </head>
 
-<div class="ilazyAppLoginSignup">
-    <div class="ilazyAppLoginSignup_Form">
-      <div class="ilazyAppLoginSignup_Form_logo">
-        <img src="https://ilazy.net/wp-content/uploads/2022/09/newLogoPSD.png">
-      </div>
-      <div class="container mx-auto mt-5 items-start grid gap-5 border border-slate-400 border-solid py-5 px-5">
+    <style>
+        body, main {
+            overflow-x: hidden;
+        }
+        .details-view {
+            display: grid;
+            grid-template-columns: .6fr 2fr;
+            gap: 2rem;
+        }
+        .detail-sidebar {
+            grid-template-columns: 1fr;
+            grid-template-rows: .2fr 1fr .1fr;
+            align-items: flex-start;
+        }
+        .user-profile .img-wrapper {
+            width: 25%;
+            aspect-ratio: 1;
+            overflow: hidden;
+            border-radius: 50%;
+        }
+    </style>
 
-        {% if process == "connect" %}
-        <h1>{% blocktrans with provider.name as provider %}Connect {{ provider }}{% endblocktrans %}</h1>
-  
-        <p>{% blocktrans with provider.name as provider %}You are about to connect a new third party account from {{ provider }}.{% endblocktrans %}</p>
-      {% else %}
-        <h1 class="text-3xl font-semibold" style="color: #0D2065;">{% blocktrans with provider.name as provider %}Sign In Via {{ provider }}{% endblocktrans %}</h1>
-  
-        <p>{% blocktrans with provider.name as provider %}You are about to sign in using a third party account from {{ provider }}.{% endblocktrans %}</p>
-      {% endif %}
-  
-      <form method="post">
-        {% csrf_token %}
-        <button class="px-4 py-2 cursor-pointer text-white text-base rounded"  style="background-color: #2574E4;" type="submit">{% trans "Continue" %}</button>
-        <a class="px-6 py-2 cursor-pointer text-gray-800 bg-white text-base rounded border border-gray-800 border-solid"  href="{% url 'app_auth:login' %}">Cancel</a>
-      </form>
-    </div>
-    </div>
-    <div class="ilazyAppLoginSignup_Img"></div>
-  </div>
+    <body>
+        <!-- prompt login -->
+      <main>
+        <div class="ilazyAppLoginSignup">
+          <div class="ilazyAppLoginSignup_Form">
+            <div class="ilazyAppLoginSignup_Form_logo">
+              <img src="https://ilazy.net/wp-content/uploads/2022/09/newLogoPSD.png">
+            </div>
+            <div class="container mx-auto mt-5 items-start grid gap-5 border border-slate-300 rounded border-solid py-10 px-5">
 
-{% endblock content %}
+              {% if process == "connect" %}
+              <h1>{% blocktrans with provider.name as provider %}Connect {{ provider }}{% endblocktrans %}</h1>
+        
+              <p>{% blocktrans with provider.name as provider %}You are about to connect a new third party account from {{ provider }}.{% endblocktrans %}</p>
+            {% else %}
+              <h1 class="text-3xl font-semibold" style="color: #0D2065;">{% blocktrans with provider.name as provider %}Sign In Via {{ provider }}{% endblocktrans %}</h1>
+        
+              <p>{% blocktrans with provider.name as provider %}You are about to sign in using a third party account from {{ provider }}.{% endblocktrans %}</p>
+            {% endif %}
+        
+            <form method="post" class="flex gap-2">
+              {% csrf_token %}
+              <button class="px-4 py-2 cursor-pointer text-white text-base rounded"  style="background-color: #2574E4;" type="submit">{% trans "Continue" %}</button>
+              <a class="px-6 py-2 cursor-pointer text-gray-800 bg-white text-base rounded border border-gray-300 border-solid"  href="{% url 'app_auth:login' %}">Cancel</a>
+            </form>
+          </div>
+          </div>
+          <div class="ilazyAppLoginSignup_Img"></div>
+        </div>
+      </main>
+  </body>
+</html>
