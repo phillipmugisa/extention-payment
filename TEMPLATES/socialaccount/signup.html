@@ -36,6 +36,18 @@
             overflow: hidden;
             border-radius: 50%;
         }
+
+        form p {
+          display: grid;
+          gap: 1rem;
+        }
+
+        form input:not([type="sumbit"]){
+          padding: .5rem 1rem;
+          font-size: 1rem;
+          border-radius: 5px;
+          border: 1px solid lightgray;
+        }
     </style>
 
     <body>
@@ -50,18 +62,15 @@
 
               <h1 class="text-3xl font-semibold" style="color: #0D2065;">{% blocktrans with provider_name=account.get_provider.name site_name=site.name %}You are about to use your {{provider_name}} account to login to
                 {{site_name}}. As a final step, please complete the following form:{% endblocktrans %}</h1>
-        
-            <form method="post" class="flex gap-2">
-              {% csrf_token %}
-              <button class="px-4 py-2 cursor-pointer text-white text-base rounded"  style="background-color: #2574E4;" type="submit">{% trans "Continue" %}</button>
-              <a class="px-6 py-2 cursor-pointer text-gray-800 bg-white text-base rounded border border-gray-300 border-solid"  href="{% url 'app_auth:login' %}">Cancel</a>
-            </form>
 
-            <form class="signup" id="signup_form" method="post" action="{% url 'socialaccount_signup' %}">
+            <form class="signup grid gap-2" id="signup_form" method="post" action="{% url 'socialaccount_signup' %}">
               {% csrf_token %}
               {{ form.as_p }}
               {% if redirect_field_value %}
-              <input type="hidden" name="{{ redirect_field_name }}" class="px-4 py-2 border border-gray-400 border-solid rounded w-full focus:border-gray-500" value="{{ redirect_field_value }}" />
+
+              <div class="grid gap-2">
+                  <input type="hidden" name="{{ redirect_field_name }}" class="px-4 py-2 border border-gray-400 border-solid rounded w-full focus:border-gray-500" value="{{ redirect_field_value }}" />
+              </div>
               {% endif %}
               <button  class="px-4 py-2 cursor-pointer text-white text-base rounded"  style="background-color: #2574E4;" type="submit">{% trans "Sign Up" %}</button>
             </form>
